@@ -4,3 +4,6 @@
 
 postgres-data
 rabbitmq-data
+mysql-data
+
+*.db
