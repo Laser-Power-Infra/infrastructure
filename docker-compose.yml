@@ -122,6 +122,43 @@ services:
       networks:
         - infra
 
+  redis:
+    image: redis:7-alpine
+    container_name: infisical-redis
+    restart: unless-stopped
+
+    volumes:
+      - ./redis-data:/data
+
+    networks:
+      - infra
+
+  infisical:
+    image: infisical/infisical:latest
+    container_name: infisical-backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+
+    env_file:
+      - .env
+
+    environment:
+      NODE_ENV: production
+
+      # Infisical database
+      DB_CONNECTION_URI: ${INFISICAL_DB_CONNECTION_URI}
+
+      # Redis
+      REDIS_URL: redis://redis:6379
+
+    ports:
+      - "7070:8080"
+
+    networks:
+      - infra
+
 networks:
   infra:
     name: infra

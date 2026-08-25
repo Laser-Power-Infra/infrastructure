@@ -5,5 +5,7 @@
 postgres-data
 rabbitmq-data
 mysql-data
+redis-data
+
 
 *.db
