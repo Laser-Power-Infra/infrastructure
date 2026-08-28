@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17
-    container_name: postgres-prod
+    container_name: postgres
 
     restart: unless-stopped
 
@@ -65,7 +65,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: mysql-prod
+    container_name: mysql
 
     restart: unless-stopped
 
@@ -87,11 +87,11 @@ services:
     networks:
       - infra
 
-  kestra:
+  kestra-infra:
       build:
         context: ./kestra
         dockerfile: Dockerfile
-      container_name: kestra
+      container_name: kestra-infra
       restart: unless-stopped
 
       ports:
@@ -124,8 +124,10 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: infisical-redis
+    container_name: redis
     restart: unless-stopped
+    ports:
+      - "6379:6379"
 
     volumes:
       - ./redis-data:/data
@@ -133,31 +135,31 @@ services:
     networks:
       - infra
 
-  infisical:
-    image: infisical/infisical:latest
-    container_name: infisical-backend
-    restart: unless-stopped
-    depends_on:
-      - postgres
-      - redis
+  # infisical:
+  #   image: infisical/infisical:latest
+  #   container_name: infisical
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - postgres
+  #     - redis
 
-    env_file:
-      - .env
+  #   env_file:
+  #     - .env
 
-    environment:
-      NODE_ENV: production
+  #   environment:
+  #     NODE_ENV: production
 
-      # Infisical database
-      DB_CONNECTION_URI: ${INFISICAL_DB_CONNECTION_URI}
+  #     # Infisical database
+  #     DB_CONNECTION_URI: ${INFISICAL_DB_CONNECTION_URI}
 
-      # Redis
-      REDIS_URL: redis://redis:6379
+  #     # Redis
+  #     REDIS_URL: redis://redis:6379
 
-    ports:
-      - "7070:8080"
+  #   ports:
+  #     - "7070:8080"
 
-    networks:
-      - infra
+  #   networks:
+  #     - infra
 
 networks:
   infra:
