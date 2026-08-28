@@ -161,7 +161,55 @@ services:
   #   networks:
   #     - infra
 
+  volume-init:
+    image: alpine
+    command: ["sh", "-c", "echo 'CIFS volumes initialized'"]
+    volumes:
+      - condutor:/mnt/condutor
+      - indexer:/mnt/indexer
+      - supply:/mnt/supply
+      - costing:/mnt/costing
+      - old-files:/mnt/old-files
+
+
 networks:
   infra:
     name: infra
     driver: bridge
+
+
+volumes:
+  condutor:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "${CONDUTOR_CIFS_DEVICE}"
+      o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
+
+  indexer:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "${INDEXER_CIFS_DEVICE}"
+      o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
+
+  supply:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "${SUPPLY_CIFS_DEVICE}"
+      o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
+
+  costing:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "${COSTING_CIFS_DEVICE}"
+      o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
+
+  old-files:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: "${OLD_FILES_CIFS_DEVICE}"
+      o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
