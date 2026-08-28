@@ -21,29 +21,29 @@ services:
     networks:
       - infra
 
-  # rabbitmq:
-  #   image: rabbitmq:4-management
-  #   container_name: rabbitmq-prod
+  rabbitmq:
+    image: rabbitmq:4-management
+    container_name: rabbitmq-prod
 
-  #   restart: unless-stopped
+    restart: unless-stopped
 
-  #   env_file:
-  #     - .env
+    env_file:
+      - .env
 
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-  #     RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_DEFAULT_PASSWORD}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_DEFAULT_PASSWORD}
 
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
-  #     - "15692:15692"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
 
-  #   volumes:
-  #     - ./rabbitmq-data:/var/lib/rabbitmq
+    volumes:
+      - ./rabbitmq-data:/var/lib/rabbitmq
 
-  #   networks:
-  #     - infra
+    networks:
+      - infra
 
   # nginx:
   #   image: nginx:latest
@@ -63,75 +63,75 @@ services:
   #     - ./nginx/conf.d:/etc/nginx/conf.d:ro
   #     - ./ssl:/etc/ngin
 
-  # mysql:
-  #   image: mysql:8.0
-  #   container_name: mysql-prod
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-prod
 
-  #   restart: unless-stopped
+    restart: unless-stopped
 
-  #   env_file:
-  #     - .env
+    env_file:
+      - .env
 
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #     # MYSQL_DATABASE: ${MYSQL_DATABASE}
-  #     MYSQL_USER: ${MYSQL_USER}
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      # MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
 
-  #   ports:
-  #     - "3306:3306"
+    ports:
+      - "3306:3306"
 
-  #   volumes:
-  #     - ./mysql-data:/var/lib/mysql
+    volumes:
+      - ./mysql-data:/var/lib/mysql
 
-  #   networks:
-  #     - infra
+    networks:
+      - infra
 
-  # kestra:
-  #     build:
-  #       context: ./kestra
-  #       dockerfile: Dockerfile
-  #     container_name: kestra
-  #     restart: unless-stopped
+  kestra:
+      build:
+        context: ./kestra
+        dockerfile: Dockerfile
+      container_name: kestra
+      restart: unless-stopped
 
-  #     ports:
-  #       - "8081:8080"
+      ports:
+        - "8081:8080"
 
-  #     user: root
+      user: root
 
-  #     environment:
-  #       SECRET_KESTRA_EXTERNAL_API_KEY: ${KESTRA_EXTERNAL_API_KEY}
+      environment:
+        SECRET_KESTRA_EXTERNAL_API_KEY: ${KESTRA_EXTERNAL_API_KEY}
 
-  #       KESTRA_CONFIGURATION: |
-  #         micronaut:
-  #           io:
-  #             watch:
-  #               enabled: true
-  #               paths:
-  #                 - /flows
+        KESTRA_CONFIGURATION: |
+          micronaut:
+            io:
+              watch:
+                enabled: true
+                paths:
+                  - /flows
 
-  #     volumes:
-  #       - ./kestra/flows:/flows
-  #       - ./kestra/storage:/app/storage
-  #       - ./kestra/data:/app/data
-  #       - /var/run/docker.sock:/var/run/docker.sock
-  #       - /tmp:/tmp
+      volumes:
+        - ./kestra/flows:/flows
+        - ./kestra/storage:/app/storage
+        - ./kestra/data:/app/data
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /tmp:/tmp
 
-  #     command: server local
+      command: server local
 
-  #     networks:
-  #       - infra
+      networks:
+        - infra
 
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: infisical-redis
-  #   restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    container_name: infisical-redis
+    restart: unless-stopped
 
-  #   volumes:
-  #     - ./redis-data:/data
+    volumes:
+      - ./redis-data:/data
 
-  #   networks:
-  #     - infra
+    networks:
+      - infra
 
   # infisical:
   #   image: infisical/infisical:latest
@@ -169,7 +169,7 @@ services:
       - costing:/mnt/costing
       - old-files:/mnt/old-files
 
-      
+
 networks:
   infra:
     name: infra
