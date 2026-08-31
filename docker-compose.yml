@@ -115,6 +115,14 @@ services:
         - ./kestra/storage:/app/storage
         - ./kestra/data:/app/data
         - /var/run/docker.sock:/var/run/docker.sock
+        # Scripts
+        - ./kestra/scripts:/app/scripts:ro
+
+    # Local PostgreSQL backups
+        - ./postgres-backups:/backups/postgres
+
+    # Network backup
+        - database:/network-backups
         - /tmp:/tmp
 
       command: server local
@@ -174,6 +182,19 @@ services:
       - costing:/mnt/costing
       - old-files:/mnt/old-files
 
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: qdrant
+    restart: unless-stopped
+
+    ports:
+      - "9001:6333"
+
+    volumes:
+      - ./qdrant-data:/qdrant/storage
+
+    networks:
+      - infra
 
 networks:
   infra:
@@ -188,6 +209,15 @@ volumes:
       type: cifs
       device: "${CONDUTOR_CIFS_DEVICE}"
       o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
+
+  database:
+      driver: local
+      driver_opts:
+        type: cifs
+        device: "${BACKUP_CIFS_DEVICE}"
+        o: "username=${CIFS_USERNAME},password=${CIFS_PASSWORD},vers=3.0"
+  
+
 
   indexer:
     driver: local

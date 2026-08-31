@@ -6,6 +6,7 @@ postgres-data
 rabbitmq-data
 mysql-data
 redis-data
-
+qdrant-data
 
 *.db
+
