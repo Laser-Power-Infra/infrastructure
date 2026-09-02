@@ -29,8 +29,8 @@ DATABASES=(
 "enquiry-quotation"
 "gmd-quotation"
 "DeliveryDB"
-"quotation-backup",
-"ceebuild-items",
+"quotation-backup"
+"ceebuild-items"
 "tender-executive-dashboard-production"
 )
 
