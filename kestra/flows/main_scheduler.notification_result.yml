@@ -6,12 +6,14 @@ triggers:
   - id: daily
     type: io.kestra.plugin.core.trigger.Schedule
     cron: "0 */3 * * *"
+    timezone: Asia/Kolkata
+    recoverMissedSchedules: LAST
 
-tasks:
+tasks: 
   - id: backup_postgres_databases
     type: io.kestra.plugin.scripts.shell.Commands
 
     taskRunner:
       type: io.kestra.plugin.core.runner.Process
     commands:
-      - bash /app/scripts/ted-backup.sh
+      - bash /app/scripts/ted-backup.sh 
