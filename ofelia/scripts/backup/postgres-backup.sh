@@ -83,7 +83,7 @@ for DATABASE in "${DATABASES[@]}"; do
     BACKUP_FILE="backup_${DATABASE}_${TIMESTAMP}.sql"
 
     LOCAL_BACKUP="${LOCAL_BACKUP_DIR}/${BACKUP_FILE}"
-    NETWORK_BACKUP="${NETWORK_BACKUP_DIR}/${BACKUP_FILE}"
+    NETWORK_BACKUP="${NETWORK_BACKUP_DIR}/network-backups/${BACKUP_FILE}"
 
     echo "------------------------------------------"
     echo "Database: $DATABASE"
@@ -139,29 +139,29 @@ for DATABASE in "${DATABASES[@]}"; do
         continue
     fi
 
-    # ---------------------------
-    # Delete local backup
-    # only after successful
-    # network copy
-    # ---------------------------
+    ---------------------------
+    Delete local backup
+    only after successful
+    network copy
+    ---------------------------
 
-    # Disabled temporarily to inspect local backups
-    # echo "Removing local backup..."
-    #
-    # if rm -f "$LOCAL_BACKUP"; then
-    #
-    #     echo "Local backup deleted."
-    #
-    # else
-    #
-    #     echo "WARNING: Network backup succeeded,"
-    #     echo "but local backup could not be deleted."
-    #     echo "Local backup:"
-    #     echo "$LOCAL_BACKUP"
-    #
-    #     FAILED=1
-    #     continue
-    # fi
+    Disabled temporarily to inspect local backups
+    echo "Removing local backup..."
+    
+    if rm -f "$LOCAL_BACKUP"; then
+    
+        echo "Local backup deleted."
+    
+    else
+    
+        echo "WARNING: Network backup succeeded,"
+        echo "but local backup could not be deleted."
+        echo "Local backup:"
+        echo "$LOCAL_BACKUP"
+    
+        FAILED=1
+        continue
+    fi
 
     echo "SUCCESS: $DATABASE"
     echo ""
