@@ -69,48 +69,48 @@ services:
     networks:
       - infra
 
-  kestra-infra:
-      build:
-        context: ./kestra
-        dockerfile: Dockerfile
-      container_name: kestra-infra
-      restart: unless-stopped
+#   kestra-infra:
+#       build:
+#         context: ./kestra
+#         dockerfile: Dockerfile
+#       container_name: kestra-infra
+#       restart: unless-stopped
 
-      ports:
-        - "8081:8080"
+#       ports:
+#         - "8081:8080"
 
-      user: root
+#       user: root
 
-      environment:
-        SECRET_KESTRA_EXTERNAL_API_KEY: ${KESTRA_EXTERNAL_API_KEY}
+#       environment:
+#         SECRET_KESTRA_EXTERNAL_API_KEY: ${KESTRA_EXTERNAL_API_KEY}
 
-        KESTRA_CONFIGURATION: |
-          micronaut:
-            io:
-              watch:
-                enabled: true
-                paths:
-                  - /flows
+#         KESTRA_CONFIGURATION: |
+#           micronaut:
+#             io:
+#               watch:
+#                 enabled: true
+#                 paths:
+#                   - /flows
 
-      volumes:
-        - ./kestra/flows:/flows
-        - ./kestra/storage:/app/storage
-        - ./kestra/data:/app/data
-        - /var/run/docker.sock:/var/run/docker.sock
-        # Scripts
-        - ./kestra/scripts:/app/scripts:ro
+#       volumes:
+#         - ./kestra/flows:/flows
+#         - ./kestra/storage:/app/storage
+#         - ./kestra/data:/app/data
+#         - /var/run/docker.sock:/var/run/docker.sock
+#         # Scripts
+#         - ./kestra/scripts:/app/scripts:ro
 
-    # Local PostgreSQL backups
-        - ./postgres-backups:/backups/postgres
+#     # Local PostgreSQL backups
+#         - ./postgres-backups:/backups/postgres
 
-    # Network backup
-        - database:/network-backups
-        - /tmp:/tmp
+#     # Network backup
+#         - database:/network-backups
+#         - /tmp:/tmp
 
-      command: server local
+#       command: server local
 
-      networks:
-        - infra
+#       networks:
+#         - infra
 
   redis:
     image: redis:7-alpine
@@ -166,10 +166,56 @@ services:
 
     volumes:
       - minio-data:/data
-    
+
     networks:
       - infra
 
+  postgres-backup:
+    build:
+      context: ./ofelia
+    container_name: postgres-backup
+    # One-shot; started on schedule by ofelia
+    restart: "no"
+
+    env_file:
+      - .env
+
+    environment:
+      POSTGRES_HOST: postgres
+      TZ: Asia/Kolkata
+
+    volumes:
+      - ./postgres-backups:/backups/postgres
+      - database:/network-backups
+
+    depends_on:
+      - postgres
+
+    networks:
+      - infra
+
+  ofelia:
+    image: mcuadros/ofelia:latest
+    container_name: ofelia
+    restart: unless-stopped
+    command: daemon --config=/etc/ofelia/config.ini
+
+    environment:
+      TZ: Asia/Kolkata
+      LASER_TED_SERVER: ${LASER_TED_SERVER}
+      LASER_TED_API_KEY: ${LASER_TED_API_KEY}
+      LASER_AUTOMATION_SERVER: ${LASER_AUTOMATION_SERVER}
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./ofelia/config.ini:/etc/ofelia/config.ini:ro
+      - ./ofelia/scripts/api:/scripts/api:ro
+
+    depends_on:
+      - postgres-backup
+
+    networks:
+      - infra
 
 
 networks:
