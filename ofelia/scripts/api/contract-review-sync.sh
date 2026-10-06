@@ -33,7 +33,10 @@ url="${GMD_APP_SERVER}/api/scheduler/contract-review"
 
 # Cheap credential probe first: GET authenticates but does NOT run the job, so a
 # key mismatch is reported in milliseconds instead of after a long sync.
-probe=$(wget -qO- -T 30 --header "x-api-key: ${GMD_SYNC_API_KEY}" "${url}" || true)
+probe=$(wget -qO- -T 30 \
+  --header "x-api-key: ${GMD_SYNC_API_KEY}" \
+  "${url}" || true)
+
 case "$probe" in
   *'"auth":"ok"'*) : ;;
   *)
