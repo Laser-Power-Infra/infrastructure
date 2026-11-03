@@ -207,6 +207,8 @@ services:
       LASER_AUTOMATION_SERVER: ${LASER_AUTOMATION_SERVER}
       GMD_SYNC_API_KEY: ${GMD_SYNC_API_KEY}
       GMD_APP_SERVER: ${GMD_APP_SERVER}
+      SHEET_DATA_SERVER: ${SHEET_DATA_SERVER}
+      SHEET_DATA_API_KEY: ${SHEET_DATA_API_KEY}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
