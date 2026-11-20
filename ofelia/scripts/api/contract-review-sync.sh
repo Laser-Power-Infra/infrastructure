@@ -1,9 +1,15 @@
 #!/bin/sh
 # Usage: contract-review-sync.sh  -- POSTs to $GMD_APP_SERVER/api/scheduler/contract-review
-# Runs the Contract Review sync, three steps in order:
-#   1. CONTRACTS + DUMP sheet -> ContractReview
-#   2. Enquiry fields (State / Utility / Project Reference)
-#   3. RM AVAIL: raw-material stock, VerifyBom, RM AVAIL, PHYSICAL STOCK
+# Runs the Contract Review sync, steps in order:
+#   1.  CONTRACTS + DUMP sheet -> ContractReview
+#   1b. ITEM MASTER ERP -> ContractReview.itemName
+#   2.  Enquiry fields (State / Utility / Project Reference)
+#   3.  RM AVAIL: raw-material stock, VerifyBom, RM AVAIL, PHYSICAL STOCK
+#   4.  INSPECTION OFFER DUMP -> offer / inspection / DI
+#   5.  INSPECTION OFFER DUMP -> InspectionOffer + draft InspectionReport
+#   6.  PROD ENTRY DUMP -> ContractReview.prodEntryDate (a failure lands in
+#       `warnings`, which the check below turns into a failed run)
+#   7.  Derived-column backfills (formerly on page open; failures also land in `warnings`)
 #
 # Heavier than raw-material-sync.sh — two full-column spreadsheet reads and a
 # large table rewrite — so it is scheduled at :30 rather than :00 to keep the two
@@ -33,10 +39,7 @@ url="${GMD_APP_SERVER}/api/scheduler/contract-review"
 
 # Cheap credential probe first: GET authenticates but does NOT run the job, so a
 # key mismatch is reported in milliseconds instead of after a long sync.
-probe=$(wget -qO- -T 30 \
-  --header "x-api-key: ${GMD_SYNC_API_KEY}" \
-  "${url}" || true)
-
+probe=$(wget -qO- -T 30 --header "x-api-key: ${GMD_SYNC_API_KEY}" "${url}" || true)
 case "$probe" in
   *'"auth":"ok"'*) : ;;
   *)

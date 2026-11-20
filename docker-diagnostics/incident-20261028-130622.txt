@@ -1,0 +1,88 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20261028130622
+Username: DESKTOP-F5I2QD2\BIDYUT KR DAS
+RunAs User: DESKTOP-F5I2QD2\BIDYUT KR DAS
+Configuration Name: 
+Machine: DESKTOP-F5I2QD2 (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe
+Process ID: 20396
+PSVersion: 5.1.26100.9711
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9711
+BuildVersion: 10.0.26100.9711
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is D:\infrastructure\docker-diagnostics\incident-20261028-130622.txt
+PS C:\Users\BIDYUT KR DAS> "=== TIME ==="
+=== TIME ===
+PS C:\Users\BIDYUT KR DAS> Get-Date
+
+28 October 2026 13:06:22
+
+
+PS C:\Users\BIDYUT KR DAS> "=== DOCKER VERSION ==="
+=== DOCKER VERSION ===
+PS C:\Users\BIDYUT KR DAS> docker version
+Client:
+ Version:           29.7.2
+ API version:       1.55
+ Go version:        go1.26.5
+ Git commit:        a7dcaa6
+ Built:             Wed Aug  5 18:31:33 2026
+ OS/Arch:           windows/amd64
+ Context:           desktop-linux
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the f
+ile specified.
+PS C:\Users\BIDYUT KR DAS> "=== DOCKER INFO ==="
+=== DOCKER INFO ===
+PS C:\Users\BIDYUT KR DAS> docker info
+    Version:  v0.6.9
+    Path:     C:\Users\BIDYUT KR DAS\.docker\cli-plugins\docker-offload.exe
+  pass: Docker Pass Secrets Manager Plugin (beta) (Docker Inc.)
+    Version:  v0.2.0
+    Path:     C:\Users\BIDYUT KR DAS\.docker\cli-plugins\docker-pass.exe
+  sandbox: "docker sandbox" is deprecated, use Docker Sandboxes instead (Docker Inc.)
+    Version:  v0.13.0
+    Path:     C:\Users\BIDYUT KR DAS\.docker\cli-plugins\docker-sandbox.exe
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.24.0
+    Path:     C:\Users\BIDYUT KR DAS\.docker\cli-plugins\docker-scout.exe
+
+Server:
+failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the f
+ile specified.
+PS C:\Users\BIDYUT KR DAS> "=== WSL STATUS ==="
+=== WSL STATUS ===
+PS C:\Users\BIDYUT KR DAS> wsl --version
+
+PS C:\Users\BIDYUT KR DAS> wsl --status
+
+PS C:\Users\BIDYUT KR DAS> wsl --list --verbose
+
+PS C:\Users\BIDYUT KR DAS> "=== DOCKER DESKTOP PROCESSES ==="
+=== DOCKER DESKTOP PROCESSES ===
+PS C:\Users\BIDYUT KR DAS> Get-Process "*docker*" -ErrorAction SilentlyContinue |
+    Select-Object Name, Id, StartTime, CPU, WorkingSet64
+PS C:\Users\BIDYUT KR DAS> "=== WINDOWS SYSTEM ERRORS ==="
+=== WINDOWS SYSTEM ERRORS ===
+PS C:\Users\BIDYUT KR DAS> Get-WinEvent -FilterHashtable @{
+    LogName = 'System'
+    Level = 1,2
+    StartTime = (Get-Date).AddHours(-24)
+} -ErrorAction SilentlyContinue |
+    Select-Object TimeCreated, ProviderName, Id, Message -First 150
+
+TimeCreated         ProviderName                          Id Message
+-----------         ------------                          -- -------
+27-10-2026 17:44:59 Microsoft-Windows-WindowsUpdateClient 20 Installation Failure: Windows failed to install the following update with error 0x80073D02: 9MV0B5HZVK9Z-Microsoft.GamingApp.
+
+
+PS C:\Users\BIDYUT KR DAS> Stop-Transcript
+**********************
+Windows PowerShell transcript end
+End time: 20261028130631
+**********************
