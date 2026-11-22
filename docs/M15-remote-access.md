@@ -21,6 +21,8 @@ Every link is HTTPS-only and protected by **Cloudflare Access** (login) before a
 | Transporter & Delivery | https://transport.gmdalui.co.in | http://192.168.1.190:6010 |
 | CEEBUILD Item | https://ceebuild.gmdalui.co.in | http://192.168.1.190:6011 |
 | Sheet Automation | https://sheets.gmdalui.co.in | http://192.168.1.190:6321 |
+| Notification Service API | https://notifier.gmdalui.co.in/docs | http://192.168.1.190:6025/docs |
+| WhatsApp (Evolution manager) | https://whatsapp.gmdalui.co.in/manager | http://192.168.1.190:6026/manager |
 
 ## How login works (staff)
 1. Open any link above in a browser (phone or laptop, any network).
@@ -37,6 +39,13 @@ CF-Access-Client-Secret: <same file>
 Store them as an n8n "Header Auth" credential – never in workflow JSON. Token valid 1 year (renew before 20-Nov-2027).
 The token is refused (403) on every other dashboard.
 
+## Machine access (n8n) – WhatsApp Notifier (added 22-Nov-2026)
+`notifier.gmdalui.co.in` and `whatsapp.gmdalui.co.in` are one Access app, "WhatsApp Notifier": staff login as above,
+plus its **own** service token `n8n-whatsapp-notifier` (headers in `C:\Users\Niloy Paul\cf-whatsapp-service-token-gmdalui.co.in.txt`).
+n8n sends both CF-Access headers, plus Evolution's own `apikey` header for Evolution calls
+(e.g. `POST https://whatsapp.gmdalui.co.in/message/sendText/<instance>`).
+This token is refused (403) on every other dashboard, including Enquiry. Valid 1 year (renew before 22-Nov-2027).
+
 ## Tests (20-Nov-2026)
 | Test | Result |
 |---|---|
@@ -48,10 +57,11 @@ The token is refused (403) on every other dashboard.
 | Service token on BOM / Invoice / Portal → 403 | ✅ |
 | GMD website + Google mail still working after DNS move | ✅ |
 | Login from mobile data with a real company email | ⬜ to be done by Minmoy |
+| 22-Nov: notifier / whatsapp without login → 302; WhatsApp token → 200 (`/health` ok, Evolution 2.3.7); same token on BOM / Enquiry → 403 | ✅ |
 
 ## Revoke access
 - One person: Zero Trust → My Team → Users → revoke session (and they can't log in without a company mailbox).
-- n8n/Claude: Zero Trust → Access → Service Auth → delete `n8n-claude-enquiry-api`.
+- n8n/Claude: Zero Trust → Access → Service Auth → delete `n8n-claude-enquiry-api` (Enquiry) or `n8n-whatsapp-notifier` (WhatsApp).
 - Everything immediately: on the server, `Stop-Service cloudflared` (or delete tunnel `laser-office-server` in Zero Trust → Networks → Tunnels).
 
 ## Logs

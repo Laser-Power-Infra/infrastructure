@@ -21,7 +21,11 @@ ROUTES = [  # subdomain, port, label
     ("transport", 6010, "Transporter And Delivery Logs"),
     ("ceebuild", 6011, "CEEBUILD Item Dashboard"),
     ("sheets", 6321, "Sheet Automation UI"),
+    ("notifier", 6025, "Notification Service API"),
+    ("whatsapp", 6026, "WhatsApp (Evolution API + manager)"),
 ]
+# Hostnames with their own Access app (staff + n8n service token), not in "Laser Office Dashboards".
+WHATSAPP_HOSTS = ("notifier", "whatsapp")
 
 
 def cf(method, path, body=None):
@@ -85,6 +89,17 @@ else:
     open(st_path, "w").write(f"CF-Access-Client-Id: {st['client_id']}\nCF-Access-Client-Secret: {st['client_secret']}\n")
     print("service token created; headers saved to", st_path)
 
+# 4b. separate service token for n8n -> WhatsApp notifier (Evolution sendText, notifier API)
+wa_st_name = "n8n-whatsapp-notifier"
+wa_sts = [t for t in cf("GET", f"/accounts/{AID}/access/service_tokens") if t["name"] == wa_st_name]
+wa_st_path = os.path.join(HOME, f"cf-whatsapp-service-token-{ZONE_NAME}.txt")
+if wa_sts:
+    wa_st = wa_sts[0]; print("service token exists", wa_st["client_id"])
+else:
+    wa_st = cf("POST", f"/accounts/{AID}/access/service_tokens", {"name": wa_st_name, "duration": "8760h"})
+    open(wa_st_path, "w").write(f"CF-Access-Client-Id: {wa_st['client_id']}\nCF-Access-Client-Secret: {wa_st['client_secret']}\n")
+    print("service token created; headers saved to", wa_st_path)
+
 # 5. Access apps (email OTP, @laserpowerinfra.com)
 idps = cf("GET", f"/accounts/{AID}/access/identity_providers")
 otp = [i for i in idps if i["type"] == "onetimepin"]
@@ -110,10 +125,14 @@ def upsert_app(name, hosts, policies):
 
 
 upsert_app("Laser Office Dashboards",
-           [f"{s}.{ZONE_NAME}" for s, _, _ in ROUTES if s != "enquiry"], [staff_policy])
+           [f"{s}.{ZONE_NAME}" for s, _, _ in ROUTES if s != "enquiry" and s not in WHATSAPP_HOSTS], [staff_policy])
 upsert_app("Enquiry to Quotation", [f"enquiry.{ZONE_NAME}"],
            [staff_policy, {"name": "n8n / Claude service token", "decision": "non_identity",
                            "include": [{"service_token": {"token_id": st["id"]}}]}])
+
+upsert_app("WhatsApp Notifier", [f"{s}.{ZONE_NAME}" for s in WHATSAPP_HOSTS],
+           [staff_policy, {"name": "n8n WhatsApp service token", "decision": "non_identity",
+                           "include": [{"service_token": {"token_id": wa_st["id"]}}]}])
 
 # 6. ingress LAST: only after Access apps protect every hostname
 ingress = [{"hostname": f"{s}.{ZONE_NAME}", "service": f"http://{SERVER}:{p}", "originRequest": {}} for s, p, _ in ROUTES]
@@ -124,6 +143,7 @@ print("ingress set:", len(ROUTES), "hostnames")
 
 state = {"account_id": AID, "zone_id": ZID, "tunnel_id": TID, "tunnel_name": TUNNEL_NAME,
          "service_token_client_id": st["client_id"], "service_token_id": st["id"],
+         "whatsapp_service_token_client_id": wa_st["client_id"], "whatsapp_service_token_id": wa_st["id"],
          "team_domain": cf("GET", f"/accounts/{AID}/access/organizations").get("auth_domain"),
          "routes": {f"https://{s}.{ZONE_NAME}": f"http://{SERVER}:{p}  ({l})" for s, p, l in ROUTES}}
 out = os.path.join(HOME, r"Desktop\ALL PROJECT\infrastructure\docs\m15-cloudflare-state-" + ZONE_NAME + ".json")
