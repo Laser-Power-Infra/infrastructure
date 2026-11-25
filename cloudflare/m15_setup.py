@@ -12,6 +12,7 @@ TUNNEL_NAME = "laser-office-server"
 ROUTES = [  # subdomain, port, label
     ("portal", 7777, "Master Portal"),
     ("tender-exec", 3126, "Tender Executive Dashboard"),
+    ("exim", 3995, "EXIM Dashboard"),
     ("enquiry", 4173, "Enquiry to Quotation"),
     ("bom", 4555, "BOM"),
     ("gmd-quotation", 4570, "GMD Quotation"),
