@@ -213,6 +213,8 @@ services:
       LASER_TENDER_API_KEY: ${LASER_TENDER_API_KEY}
       ARMOURING_APP_SERVER: ${ARMOURING_APP_SERVER}
       ARMOURING_JOB_SECRET: ${ARMOURING_JOB_SECRET}
+      CURING_SERVER: ${CURING_SERVER}
+      CURING_API_KEY: ${CURING_API_KEY}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
