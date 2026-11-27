@@ -4,6 +4,8 @@
 # buttons do, in that order: Smartsheet -> SmartsheetTender refresh, then
 # allocation of unallocated tenders. If the refresh does not complete the app
 # skips allocation and returns success:false.
+# The same run then re-reads the Google Sheets (rates, BOM, ERP dumps, GTP); a
+# failed sheet shows under "sheets" in the body and does not fail this job.
 #
 # Allocation only fills rows that have no allocatedTo, so re-running is safe.
 #
