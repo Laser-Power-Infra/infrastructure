@@ -211,6 +211,8 @@ services:
       SHEET_DATA_API_KEY: ${SHEET_DATA_API_KEY}
       LASER_TENDER_SERVER: ${LASER_TENDER_SERVER}
       LASER_TENDER_API_KEY: ${LASER_TENDER_API_KEY}
+      SFG_APP_SERVER: ${SFG_APP_SERVER}
+      SFG_SYNC_API_KEY: ${SFG_SYNC_API_KEY}
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
